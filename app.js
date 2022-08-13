@@ -6,6 +6,9 @@ const postRoutes = require("./routes/post");
 const expressValidator = require("express-validator");
 const authRoutes = require("./routes/auth");
 const cookieParser = require("cookie-parser");
+const userRoutes = require("./routes/user");
+const fs = require("fs");
+const cors = require("cors");
 
 dotenv.config();
 
@@ -19,11 +22,34 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(expressValidator());
 app.use(cookieParser());
+app.use(cors());
 
 //router middleware
 app.use("/api/v1", postRoutes);
 app.use("/api/v1", authRoutes);
+app.use("/api/v1", userRoutes);
 
+//express token error handler middleware
+app.use(function (err, req, res, next) {
+    if (err.name === "UnauthorizedError") {
+        res.status(401).send("invalid token...");
+    } else {
+        next(err);
+    }
+});
+
+
+// api docs
+app.get("/docs", (req, res)=> {
+  fs.readFile("docs/apiDocs.json", (err, result)=> {
+    if(err){
+      return res.status(400).json({err});
+    }else{
+      let docs = JSON.parse(result);
+      res.json(docs);
+    }
+  })
+})
 
 //db
 const dbConnect = () => {
