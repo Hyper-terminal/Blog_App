@@ -30,7 +30,7 @@ exports.allUsers = (req, res) => {
     User.find((e, user) => {
         if (e) res.status(400).json({ error: e });
         else {
-            res.json({ users: user });
+            res.json(user);
         }
     }).select("name email updated created");
 }
