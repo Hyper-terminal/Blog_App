@@ -18,7 +18,7 @@ exports.userById = (req, res, next, id) => {
     });
 };
 
-exports.hasAuthorization = (req, res) => {
+exports.hasAuthorization = (req, res, next) => {
     const authorized =
         req.profile && req.auth && req.profile._id === req.auth._id;
     if (!authorized) {
@@ -26,12 +26,14 @@ exports.hasAuthorization = (req, res) => {
             error: "User is not authorized to perform this action",
         });
     }
+    next();
 };
 
-exports.allUsers = (res) => {
+exports.allUsers = (req, res) => {
     User.find((e, user) => {
-        if (e) res.status(400).json({ error: e });
-        else {
+        if (e) {
+            return res.status(400).json({ error: e });
+        } else {
             res.json(user);
         }
     }).select("name email updated created");

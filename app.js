@@ -32,7 +32,7 @@ app.use("/api/v1", userRoutes);
 //express token error handler middleware
 app.use(function (err, req, res, next) {
     if (err.name === "UnauthorizedError") {
-        res.status(401).send("invalid token...");
+        res.status(401).json({error: "You are not authorized to perform this action!!!"});
     } else {
         next(err);
     }
